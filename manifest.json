@@ -1,0 +1,77 @@
+{
+  "manifest_version": "0.4",
+  "name": "@nimblebraininc/aws-ses",
+  "version": "0.1.0",
+  "description": "Send emails using AWS Simple Email Service (SES)",
+  "author": {
+    "name": "NimbleBrain Inc",
+    "email": "hello@nimblebrain.ai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NimbleBrainInc/mcp-aws-ses"
+  },
+  "user_config": {
+    "aws_access_key_id": {
+      "type": "string",
+      "title": "AWS Access Key ID",
+      "description": "Your AWS access key ID with SES permissions",
+      "sensitive": true,
+      "required": true
+    },
+    "aws_secret_access_key": {
+      "type": "string",
+      "title": "AWS Secret Access Key",
+      "description": "Your AWS secret access key",
+      "sensitive": true,
+      "required": true
+    },
+    "aws_region": {
+      "type": "string",
+      "title": "AWS Region",
+      "description": "AWS region for SES (e.g. us-east-1, eu-west-1)",
+      "default": "us-east-1"
+    },
+    "from_email": {
+      "type": "string",
+      "title": "Default Sender Email",
+      "description": "Verified sender email address in SES",
+      "required": true
+    }
+  },
+  "server": {
+    "type": "python",
+    "entry_point": "mcp_aws_ses.server",
+    "mcp_config": {
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_aws_ses.server"
+      ],
+      "env": {
+        "AWS_ACCESS_KEY_ID": "${user_config.aws_access_key_id}",
+        "AWS_SECRET_ACCESS_KEY": "${user_config.aws_secret_access_key}",
+        "AWS_SES_REGION": "${user_config.aws_region}",
+        "AWS_SES_FROM_EMAIL": "${user_config.from_email}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "send_email",
+      "description": "Send an email using AWS SES"
+    }
+  ],
+  "_meta": {
+    "org.mpaktrust": {
+      "mtf_version": "0.1",
+      "permissions": {
+        "filesystem": "none",
+        "network": "outbound",
+        "environment": "read",
+        "subprocess": "none",
+        "native": "none"
+      }
+    }
+  }
+}
