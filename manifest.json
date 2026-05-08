@@ -1,12 +1,13 @@
 {
   "manifest_version": "0.4",
   "name": "@nimblebraininc/aws-ses",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Send emails using AWS Simple Email Service (SES)",
   "author": {
     "name": "NimbleBrain Inc",
     "email": "hello@nimblebrain.ai"
   },
+  "icon": "https://static.nimblebrain.ai/icons/aws-ses.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/NimbleBrainInc/mcp-aws-ses"

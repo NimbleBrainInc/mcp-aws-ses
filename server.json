@@ -2,7 +2,7 @@
   "$schema": "https://schemas.nimblebrain.ai/v1/nimblebrain-server.schema.json",
   "name": "ai.nimblebrain/aws-ses",
   "description": "Send emails using AWS Simple Email Service (SES)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "title": "AWS SES MCP Server",
   "repository": {
     "url": "https://github.com/NimbleBrainInc/mcp-aws-ses",
