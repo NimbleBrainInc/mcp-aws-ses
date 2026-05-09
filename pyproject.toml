@@ -1,6 +1,6 @@
 [project]
 name = "mcp-aws-ses"
-version = "0.1.1"
+version = "0.1.2"
 description = "AWS SES MCP Server"
 readme = "README.md"
 license = {text = "MIT"}

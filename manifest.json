@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.4",
   "name": "@nimblebraininc/aws-ses",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Send emails using AWS Simple Email Service (SES)",
   "author": {
     "name": "NimbleBrain Inc",
