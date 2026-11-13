@@ -1,6 +1,6 @@
 [project]
 name = "mcp-aws-ses"
-version = "0.1.2"
+version = "0.2.0"
 description = "AWS SES MCP Server"
 readme = "README.md"
 license = {text = "MIT"}
@@ -18,7 +18,7 @@ classifiers = [
 ]
 dependencies = [
     "boto3>=1.35.0",
-    "fastmcp>=2.14.0",
+    "fastmcp>=4.0.0",
     "pydantic>=2.0.0",
     "python-dotenv>=1.0.0",
 ]

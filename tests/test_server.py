@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from fastmcp import Client
 
+from mcp_aws_ses.api_client import SESError
 from mcp_aws_ses.api_models import SendEmailResponse
 from mcp_aws_ses.server import mcp
 
@@ -108,3 +109,39 @@ def test_send_email_response_model() -> None:
     assert response.message_id == "test-message-id"
     assert response.to == "recipient@example.com"
     assert response.subject == "Test"
+
+
+@pytest.mark.asyncio
+async def test_ses_error_is_reported_as_tool_error() -> None:
+    """An SES failure reaches the caller as an error result with its message."""
+    with patch("mcp_aws_ses.server.get_client") as mock_get_client:
+        mock_client = AsyncMock()
+        mock_client.send_email.side_effect = SESError("Email address is not verified")
+        mock_get_client.return_value = mock_client
+
+        async with Client(mcp) as client:
+            result = await client.call_tool(
+                "send_email",
+                {"to": "a@example.com", "subject": "s", "body": "b", "from_email": "f@example.com"},
+                raise_on_error=False,
+            )
+
+        assert result.is_error
+        assert "AWS SES error: Email address is not verified" in result.content[0].text
+
+
+@pytest.mark.asyncio
+async def test_missing_credentials_are_reported_as_tool_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Without AWS credentials the caller learns which variable to set."""
+    monkeypatch.delenv("AWS_ACCESS_KEY_ID", raising=False)
+    monkeypatch.setattr("mcp_aws_ses.server._client", None)
+
+    async with Client(mcp) as client:
+        result = await client.call_tool(
+            "send_email", {"to": "a@example.com", "subject": "s", "body": "b"}, raise_on_error=False
+        )
+
+    assert result.is_error
+    assert "AWS_ACCESS_KEY_ID" in result.content[0].text
