@@ -145,3 +145,43 @@ async def test_missing_credentials_are_reported_as_tool_error(
 
     assert result.is_error
     assert "AWS_ACCESS_KEY_ID" in result.content[0].text
+
+
+@pytest.mark.asyncio
+async def test_missing_secret_key_is_reported_as_tool_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """With an access key ID but no secret, the caller learns which variable to set."""
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "AKIAEXAMPLE")
+    monkeypatch.delenv("AWS_SECRET_ACCESS_KEY", raising=False)
+    monkeypatch.setattr("mcp_aws_ses.server._client", None)
+
+    async with Client(mcp) as client:
+        result = await client.call_tool(
+            "send_email", {"to": "a@example.com", "subject": "s", "body": "b"}, raise_on_error=False
+        )
+
+    assert result.is_error
+    assert "AWS_SECRET_ACCESS_KEY environment variable is required" in result.content[0].text
+
+
+@pytest.mark.asyncio
+async def test_missing_sender_is_reported_as_tool_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """With no from_email and no AWS_SES_FROM_EMAIL, the caller learns how to give a sender."""
+    monkeypatch.delenv("AWS_SES_FROM_EMAIL", raising=False)
+    with patch("mcp_aws_ses.server.get_client") as mock_get_client:
+        mock_client = AsyncMock()
+        mock_get_client.return_value = mock_client
+
+        async with Client(mcp) as client:
+            result = await client.call_tool(
+                "send_email",
+                {"to": "a@example.com", "subject": "s", "body": "b"},
+                raise_on_error=False,
+            )
+
+        assert result.is_error
+        assert "Sender email is required" in result.content[0].text
+        mock_client.send_email.assert_not_called()
